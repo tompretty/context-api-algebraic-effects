@@ -1,24 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+
+const LogContext = React.createContext({ log: () => {} });
 
 function App() {
+  const consoleLogger = (message) => {
+    console.log(message);
+  };
+
+  const listLogger = () => {
+    const log = [];
+    const logger = (message) => {
+      log.push(message);
+
+      // just so we can see it!
+      console.log({ log })
+    };
+    return logger;
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <LogContext.Provider value={{ log: consoleLogger }}>
+        <Component />
+      </LogContext.Provider>
+
+      <LogContext.Provider value={{ log: listLogger() }}>
+        <Component />
+      </LogContext.Provider>
     </div>
+  );
+}
+
+function Component() {
+  return (
+    <LogContext.Consumer>
+      {(value) => {
+        value.log("Hello, World!");
+
+        return <div>Hello</div>;
+      }}
+    </LogContext.Consumer>
   );
 }
 
